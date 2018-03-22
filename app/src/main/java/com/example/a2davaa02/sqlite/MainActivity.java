@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     MyHelper sql;
     @Override
@@ -17,29 +17,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sql = new MyHelper(this);
-        //EditText id=(EditText)findViewById(R.id.ID);
-        //EditText title=(EditText)findViewById(R.id.title);
-        //EditText artist=(EditText)findViewById(R.id.artist);
-        //EditText year=(EditText)findViewById(R.id.year);
 
         Button add=(Button)findViewById(R.id.add);
         Button search=(Button)findViewById(R.id.search);
-        Button update=(Button)findViewById(R.id.update);
-        Button delete=(Button)findViewById(R.id.delete);
+        //Button update=(Button)findViewById(R.id.update);
+        //Button delete=(Button)findViewById(R.id.delete);
 
-        add.setOnClickListener(this);
+        add.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v) {
+                        EditText id=(EditText)findViewById(R.id.ID);
+                        EditText title=(EditText)findViewById(R.id.Title);
+                        EditText artist=(EditText)findViewById(R.id.artist);
+                        EditText year=(EditText)findViewById(R.id.year);
+
+                        String sTitle = title.getText().toString(), sArtist =artist.getText().toString();
+                        long lYear = Long.parseLong(year.getText().toString());
+
+                        long insertId = sql.insertRecord(sTitle, sArtist, lYear);
+
+                        id.setText(Long.toString(insertId));
+                    }
+                }
+        );
+        search.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v) {
+                        EditText id=(EditText)findViewById(R.id.ID);
+                        EditText title=(EditText)findViewById(R.id.Title);
+                        EditText artist=(EditText)findViewById(R.id.artist);
+                        EditText year=(EditText)findViewById(R.id.year);
+
+                        Song s=sql.findSong(Integer.parseInt(id.getText().toString()));
+
+                        title.setText(s.getTitle());
+                        artist.setText(s.getArtist());
+                        year.setText(Long.toString(s.getYear()));
+                    }
+                }
+        );
     }
-
-    public void onClick(View view)
-    {
-        EditText id=(EditText)findViewById(R.id.ID);
-        EditText title=(EditText)findViewById(R.id.title);
-        EditText artist=(EditText)findViewById(R.id.artist);
-        EditText year=(EditText)findViewById(R.id.year);
-
-        id.setText(Long.toString(sql.insertRecord(title.getText().toString(),artist.getText().toString(),Integer.parseInt(year.getText().toString()))));
-    }
-
 
     @Override
     protected void onDestroy() {

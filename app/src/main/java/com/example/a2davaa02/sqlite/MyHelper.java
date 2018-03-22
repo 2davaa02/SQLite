@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 
 public class MyHelper extends SQLiteOpenHelper {
-    static final int VERSION = 1;
+    static final int VERSION = 2;
     static final String DATABASE_NAME = "TestDB";
 
     public MyHelper(Context ctx) {
@@ -22,14 +22,14 @@ public class MyHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL ("CREATE TABLE IF NOT EXISTS Songs (Id INTEGER PRIMARY KEY, Tittle VARCHAR(255), Artist VARCHAR(255), Year INTEGER)");
+        db.execSQL ("CREATE TABLE IF NOT EXISTS Songs (Id INTEGER PRIMARY KEY, Title VARCHAR(255), Artist VARCHAR(255), Year LONG)");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL ("DROP TABLE IF EXISTS Songs");
         onCreate(db);
     }
-    public long insertRecord(String Title,String Artist,Integer Year)
+    public long insertRecord(String Title,String Artist,Long Year)
     {
         SQLiteDatabase db = getWritableDatabase();
         SQLiteStatement stmt = db.compileStatement
@@ -40,25 +40,17 @@ public class MyHelper extends SQLiteOpenHelper {
         long id = stmt.executeInsert();
         return id;
     }
-    public ArrayList<Song> findSong(Integer ID)
+   public Song findSong(Integer ID)
     {
-        ArrayList<Song> people = new ArrayList<Song>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery ("SELECT * FROM People WHERE Id=?",
+        Cursor cursor = db.rawQuery ("SELECT * FROM Songs WHERE Id=?",
                new String[]{Integer.toString(ID)});
-        if (cursor.moveToFirst())
-        {
-            while(!cursor.isAfterLast())
-            {
-                Song s = new Song
-                        (cursor.getString(cursor.getColumnIndex("Title")),
-                                cursor.getString(cursor.getColumnIndex("Artist")),
-                                cursor.getLong(cursor.getColumnIndex("Year")));
-                people.add(s);
-                cursor.moveToNext();
-            }
-        }
-        return people;
+
+        cursor.moveToFirst();
+        Song s = new Song(cursor.getString(cursor.getColumnIndex("Title")),
+                        cursor.getString(cursor.getColumnIndex("Artist")),
+                        cursor.getLong(cursor.getColumnIndex("Year")));
+        return s;
     }
 
 
